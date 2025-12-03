@@ -36,6 +36,18 @@ android {
     }
     buildFeatures {
         compose = false
+        viewBinding = true
+    }
+    packaging {
+        resources {
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/LICENSE.txt"
+            excludes += "META-INF/NOTICE.txt"
+            excludes += "META-INF/io.netty.versions.properties"
+        }
     }
 }
 
@@ -55,6 +67,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx.v262)
     // Room
     implementation(libs.androidx.room.runtime)
+    implementation(libs.firebase.appdistribution.gradle)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     // RecyclerView
@@ -72,7 +85,9 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
-
     implementation(libs.androidx.room.runtime)
+    implementation(libs.material.v1120)
+    implementation(libs.androidx.swiperefreshlayout)
+
 
 }

@@ -13,7 +13,6 @@
         android:background="#1A72B8"
         android:title="@string/app_name"
         android:titleTextColor="@android:color/white"
-        app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/ThemeOverlay.Material3.Light" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

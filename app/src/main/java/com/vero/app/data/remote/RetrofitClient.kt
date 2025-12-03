@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private const val BASE_URL = "https://api.baubuddy.de/dev/"
+    private const val BASE_URL = "https://api.baubuddy.de/"
 
     private val client = OkHttpClient.Builder()
         .addInterceptor(
