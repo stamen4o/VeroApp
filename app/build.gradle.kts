@@ -64,10 +64,9 @@ dependencies {
     // Lifecycle + ViewModel (MVVM)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx.v262)
     // Room
     implementation(libs.androidx.room.runtime)
-    implementation(libs.firebase.appdistribution.gradle)
+
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     // RecyclerView
@@ -86,8 +85,15 @@ dependencies {
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.material.v1120)
+    implementation(libs.material)
     implementation(libs.androidx.swiperefreshlayout)
+    // CameraX
+    implementation(libs.cameraX.core)
+    implementation(libs.cameraX.camera2)
+    implementation(libs.cameraX.lifecycle)
+    implementation(libs.cameraX.view)
 
+// ML Kit
+    implementation(libs.mlkit.barcode)
 
 }
