@@ -31,6 +31,11 @@ class TasksActivity : AppCompatActivity() {
                 // Apply search
                 searchView?.setQuery(qrText, true)
                 viewModel.setQuery(qrText)
+
+                // NEW — expand search UI & focus
+                searchView?.isIconified = false       // expand search bar
+                searchView?.requestFocus()            // focus cursor
+                binding.tasksRecycler.scrollToPosition(0)  // optional: scroll to top
             }
         }
     private var allTasks: List<TaskEntity> = emptyList()
@@ -56,6 +61,8 @@ class TasksActivity : AppCompatActivity() {
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.refresh(includeRemote = true)
         }
+        supportActionBar?.title = "Tasks"
+
 
     }
 
@@ -70,29 +77,66 @@ class TasksActivity : AppCompatActivity() {
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 viewModel.setQuery(query.orEmpty())
+                showBackArrow()   // show back button when searching
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 viewModel.setQuery(newText.orEmpty())
+
+                if (newText.isNullOrEmpty()) {
+                    hideBackArrow()  // return to full list, hide back arrow
+                } else {
+                    showBackArrow()  // searching → show back arrow
+                }
+
                 return true
             }
         })
 
         return true
     }
+    private fun showBackArrow() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun hideBackArrow() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+    }
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+
+            // Back arrow in toolbar
+            android.R.id.home -> {
+                if (!searchView!!.query.isNullOrEmpty() || !searchView!!.isIconified) {
+
+                    searchView!!.setQuery("", false)
+                    searchView!!.isIconified = true
+                    viewModel.setQuery("")
+
+                    hideBackArrow() // hide back button on full list
+
+                    return true
+                }
+
+                finish()
+                true
+            }
+
+
+            // QR Scan button
             R.id.action_scan -> {
                 val intent = Intent(this, QrScanActivity::class.java)
                 qrLauncher.launch(intent)
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
+
     private fun filterTasks(query: String?) {
         if (query.isNullOrEmpty()) {
             adapter.submitList(allTasks)
@@ -111,4 +155,6 @@ class TasksActivity : AppCompatActivity() {
 
         adapter.submitList(filtered)
     }
+
+
 }
