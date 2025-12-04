@@ -16,11 +16,11 @@ interface TaskDao {
     suspend fun getAllTasks(): List<TaskEntity>
 
     @Query("""
-        SELECT * FROM tasks
-        WHERE task LIKE '%' || :query || '%' 
-        OR title LIKE '%' || :query || '%'
-        OR description LIKE '%' || :query || '%'
-        OR colorCode LIKE '%' || :query || '%'
+        SELECT * FROM tasks 
+        WHERE LOWER(task) LIKE '%' || LOWER(:q) || '%' 
+           OR LOWER(title) LIKE '%' || LOWER(:q) || '%'
+           OR LOWER(description) LIKE '%' || LOWER(:q) || '%'
+           OR LOWER(colorCode) LIKE '%' || LOWER(:q) || '%'
     """)
-    suspend fun searchTasks(query: String): List<TaskEntity>
+    suspend fun searchTasks(q: String): List<TaskEntity>
 }

@@ -49,7 +49,7 @@ class TaskRepository(
     private suspend fun saveTasks(remote: List<TaskResponse>): List<TaskEntity> {
         val mapped = remote.map {
             TaskEntity(
-                task = it.task,
+                task = it.task ?: "UNKNOWN_TASK_${System.currentTimeMillis()}",
                 title = it.title,
                 description = it.description,
                 colorCode = it.colorCode

@@ -5,10 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "tasks")
 data class TaskEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val task: String?,
+    @PrimaryKey val task: String,
     val title: String?,
     val description: String?,
     val colorCode: String?
 )
+
 

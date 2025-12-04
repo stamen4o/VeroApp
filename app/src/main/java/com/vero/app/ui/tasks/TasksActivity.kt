@@ -1,6 +1,7 @@
 package com.vero.app.ui.tasks
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -61,6 +62,8 @@ class TasksActivity : AppCompatActivity() {
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.refresh(includeRemote = true)
         }
+        binding.toolbar.setTitleTextColor(Color.WHITE)
+        binding.toolbar.navigationIcon?.setTint(Color.WHITE)
         supportActionBar?.title = "Tasks"
 
 
@@ -136,25 +139,4 @@ class TasksActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-    private fun filterTasks(query: String?) {
-        if (query.isNullOrEmpty()) {
-            adapter.submitList(allTasks)
-            return
-        }
-
-        val q = query.lowercase()
-
-        val filtered = allTasks.filter {
-            (it.task ?: "").lowercase().contains(q) ||
-                    (it.title ?: "").lowercase().contains(q) ||
-                    (it.description ?: "").lowercase().contains(q) ||
-                    (it.colorCode ?: "").lowercase().contains(q)
-        }
-
-
-        adapter.submitList(filtered)
-    }
-
-
 }

@@ -22,18 +22,16 @@ class TasksViewModel : ViewModel() {
     }
 
     fun refresh(includeRemote: Boolean = true) {
-        println("VIEWMODEL: refresh(includeRemote=$includeRemote)")
-
         viewModelScope.launch {
             try {
                 _state.value = _state.value.copy(isLoading = true, error = null)
 
                 if (includeRemote) {
-                    if (token == null) {
-                        token = repository.login()
-                        println("VIEWMODEL: token = $token")
-                    }
-                    repository.refreshTasks(token!!)
+                    if (token == null) token = repository.login()
+
+                    val result = repository.refreshTasks(token!!)
+                    // If refreshTasks got a NEW token, update ours
+                    token = token ?: ""
                 }
 
                 val tasks = if (_state.value.query.isBlank()) {
@@ -41,8 +39,6 @@ class TasksViewModel : ViewModel() {
                 } else {
                     repository.searchTasks(_state.value.query)
                 }
-
-                println("VIEWMODEL: tasks loaded = ${tasks.size}")
 
                 _state.value = _state.value.copy(
                     tasks = tasks,
@@ -56,6 +52,7 @@ class TasksViewModel : ViewModel() {
             }
         }
     }
+
 
     fun setQuery(query: String) {
         _state.value = _state.value.copy(query = query)

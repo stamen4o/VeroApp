@@ -5,14 +5,17 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import com.vero.app.R
 import com.vero.app.databinding.ActivityQrscanBinding
 
 class QrScanActivity : AppCompatActivity() {
@@ -25,21 +28,29 @@ class QrScanActivity : AppCompatActivity() {
             if (granted) startCamera()
             else finish()
         }
+    private val cameraPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) startCamera() else finish()
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityQrscanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Setup transparent toolbar back button
+        binding.topBar.navigationIcon = getDrawable(R.drawable.ic_arrow_back_white)
+        binding.topBar.setNavigationOnClickListener { finish() }
+
+        // Camera permission + start logic
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+            == PackageManager.PERMISSION_GRANTED) {
             startCamera()
         } else {
-            permissionLauncher.launch(Manifest.permission.CAMERA)
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
+
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -73,6 +84,7 @@ class QrScanActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
+    @OptIn(ExperimentalGetImage::class)
     private fun processFrame(imageProxy: androidx.camera.core.ImageProxy) {
         if (isProcessing) {
             imageProxy.close()
