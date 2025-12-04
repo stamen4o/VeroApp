@@ -9,7 +9,7 @@ import com.vero.app.data.local.entity.TaskEntity
 
 @Database(
     entities = [TaskEntity::class],
-    version = 6,
+    version = 9,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

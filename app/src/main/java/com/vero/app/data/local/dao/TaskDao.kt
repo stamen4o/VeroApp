@@ -9,6 +9,9 @@ import com.vero.app.data.local.entity.TaskEntity
 @Dao
 interface TaskDao {
 
+    @Query("DELETE FROM tasks")
+    suspend fun clearAll()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTasks(tasks: List<TaskEntity>)
 

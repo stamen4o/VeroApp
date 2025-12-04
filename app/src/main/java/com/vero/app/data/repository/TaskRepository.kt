@@ -47,9 +47,11 @@ class TaskRepository(
     }
 
     private suspend fun saveTasks(remote: List<TaskResponse>): List<TaskEntity> {
+        dao.clearAll()
+
         val mapped = remote.map {
             TaskEntity(
-                task = it.task ?: "UNKNOWN_TASK_${System.currentTimeMillis()}",
+                task = it.task ?: "",           // cannot be null now
                 title = it.title,
                 description = it.description,
                 colorCode = it.colorCode
@@ -58,8 +60,9 @@ class TaskRepository(
 
         dao.insertTasks(mapped)
 
-        println("TASKS: saved ${mapped.size} items locally")
-        return mapped
+        val localNow = dao.getAllTasks()
+        println("TASKS: local DB now has ${localNow.size} items")
+        return localNow
     }
 
     suspend fun getTasksLocal() = dao.getAllTasks()

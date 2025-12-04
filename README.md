@@ -20,5 +20,46 @@ Professional Git workflow
 Stable → main, Development → dev, Feature branches per module
 
 
+
+## 🔄 App Flow Summary
+
+1. **App launches TasksActivity**
+   - Shows list of tasks stored locally
+   - Sets up search bar + QR integration
+
+2. **TasksActivity observes ViewModel state**
+   - State contains: tasks, loading flag, error, query
+
+3. **ViewModel refresh()**
+   - If first launch → logs in → retrieves Bearer token
+   - Fetches remote tasks (if online)
+   - Saves tasks locally via Room
+   - Emits updated state to UI
+
+4. **Repository**
+   - Central data source (single point of truth)
+   - Handles:
+     - Authorization login
+     - API requests
+     - Database read/write
+     - Searching local DB
+
+5. **Room Database**
+   - Stores tasks for full offline support
+   - Handles filtering through SQL LIKE queries
+
+6. **QR Scanner (QrScanActivity)**
+   - User scans QR
+   - Passes scanned text back to TasksActivity
+   - SearchView + ViewModel filter results immediately
+
+7. **WorkManager (Background Sync)**
+   - Every 60 minutes:
+     - Logs in (token refresh)
+     - Fetches new tasks
+     - Updates DB silently
+
+
+
 This repo is structured and documented to demonstrate clean code, architecture discipline, and professional Android practices.
 Targets evaluation by VERO Digital Solutions.

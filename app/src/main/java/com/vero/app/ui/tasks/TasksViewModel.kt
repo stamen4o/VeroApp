@@ -1,5 +1,8 @@
 package com.vero.app.ui.tasks
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vero.app.App
@@ -18,22 +21,34 @@ class TasksViewModel : ViewModel() {
     private var token: String? = null
 
     init {
-        refresh(includeRemote = true)
+        refresh(includeRemote = false)   // FIRST load local ONLY
+        refresh(includeRemote = true)    // THEN try remote
     }
 
-    fun refresh(includeRemote: Boolean = true) {
+
+    fun refresh(includeRemote: Boolean = true, online: Boolean = true) {
         viewModelScope.launch {
             try {
                 _state.value = _state.value.copy(isLoading = true, error = null)
 
-                if (includeRemote) {
-                    if (token == null) token = repository.login()
+                // Only call remote API if includeRemote == true AND device is online
+                if (includeRemote && online) {
 
-                    val result = repository.refreshTasks(token!!)
-                    // If refreshTasks got a NEW token, update ours
-                    token = token ?: ""
+                    // Login if token missing
+                    if (token == null) {
+                        token = repository.login()
+                    }
+
+                    // Perform remote sync
+                    val refreshed = repository.refreshTasks(token!!)
+
+                    // Keep ViewModel's token in sync in case repository refreshed it
+                    if (refreshed.isNotEmpty()) {
+                        token = token
+                    }
                 }
 
+                // Always load local DB (works offline!)
                 val tasks = if (_state.value.query.isBlank()) {
                     repository.getTasksLocal()
                 } else {
@@ -44,6 +59,7 @@ class TasksViewModel : ViewModel() {
                     tasks = tasks,
                     isLoading = false
                 )
+
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     isLoading = false,
@@ -52,8 +68,6 @@ class TasksViewModel : ViewModel() {
             }
         }
     }
-
-
     fun setQuery(query: String) {
         _state.value = _state.value.copy(query = query)
         refresh(includeRemote = false)
